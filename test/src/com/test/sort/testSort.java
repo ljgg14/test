@@ -95,13 +95,11 @@ public class testSort {
         
         // 문자열 배열로 변환
         String[] strArrTmp = Arrays.stream(numbers).mapToObj(String::valueOf).toArray(String[]::new);
-        System.out.println(">>>>>>>>>>> \t" + Arrays.deepToString(strArrTmp));
         
         // 문자열 길이를 추가한 2차원 배열 생성 (문자열은 4회씩 복제 시킨다. ex.15->15151515)
         String[][] strArr2D = Arrays.stream(strArrTmp)
                                     .map(item -> new String[]{item+item+item+item, String.valueOf(item.length())})
                                     .toArray(String[][]::new);
-        System.out.println(">>>>>>>>>>> \t" + Arrays.deepToString(strArr2D));
         
         // 2차원 배열 행별 0번째 인덱스 기준으로 내림차순 정렬
         Arrays.sort(strArr2D, Comparator.comparing((String[] order) -> order[0]).reversed());
@@ -111,17 +109,17 @@ public class testSort {
                                     .map(item -> item[0].substring(0, Integer.valueOf(item[1])))
                                     .toArray(String[]::new);
         
-        System.out.println(">>>>>>>>>>> \t" + Arrays.deepToString(strArrAns));
-        
         
         // 결과 조합
         StringBuffer sb = new StringBuffer();
-        for(String i : strArrAns) {
-            sb.append(String.valueOf(i));
-        }//
+        boolean zeroFlag = false;
+        for(String str : strArrAns) {
+            sb.append(str);
+        }
         String strAns = sb.toString();
-        // 원소가 모두 0일 경우 000 이 아닌 0으로 리턴.
+        // 원소가 모두 0일 경우 000 이 아닌 0으로 리턴
         answer = strAns.chars().filter(c->c=='0').count() == strAns.length() ? "0" : strAns;
+        
         
         System.out.println("########### \t" + answer);
 		
