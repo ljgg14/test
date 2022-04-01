@@ -120,7 +120,7 @@ public class testSort {
             sb.append(String.valueOf(i));
         }//
         String strAns = sb.toString();
-        // 원소가 모두 0일 경우 000 이 아닌 0으로 리턴
+        // 원소가 모두 0일 경우 000 이 아닌 0으로 리턴.
         answer = strAns.chars().filter(c->c=='0').count() == strAns.length() ? "0" : strAns;
         
         System.out.println("########### \t" + answer);
