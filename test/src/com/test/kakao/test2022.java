@@ -61,7 +61,9 @@ public class test2022 {
             for(int j=0;j<rptIdArr.length;j++) {
                 String strRptId = rptIdArr[j];
                 
-                String[] tmpArr = Arrays.stream(rptdArrCnt2D).filter(f->f[0].equals(strRptId)).map(f->f[1]).toArray(String[]::new);
+                String[] tmpArr = Arrays.stream(rptdArrCnt2D)
+                							.filter(f->f[0].equals(strRptId))
+                							.map(f->f[1]).toArray(String[]::new);
                 int rptIdCnt = Integer.valueOf(tmpArr[0]);
                 
                 // 정지 기준 충족할 경우 정지 카운트 증가
