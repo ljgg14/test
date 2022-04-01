@@ -13,35 +13,38 @@ public class test2022 {
     	
     	String[] id_list = {"muzi", "frodo", "apeach", "neo"};
     	String[] report  = {"muzi frodo", "apeach frodo", "frodo neo", "muzi neo", "apeach muzi"};
+//    	String[] id_list = {"con", "ryan"};
+//    	String[] report  = {"ryan con", "ryan con", "ryan con", "ryan con"};
+    	
     	int k = 2;
     	
     	int[] answer = new int[id_list.length];
 
         System.out.println("########### id_list \t" + Arrays.toString(id_list));
+        System.out.println("########### report \t" + Arrays.toString(report));
         
         
-        // 동일 유저 신고 중복 제거
-        String[] prtArrDst = Arrays.stream(report).distinct().toArray(String[]::new);
+        // 신고 중복 제거
+        String[] rptArrDst = Arrays.stream(report).distinct().toArray(String[]::new);
         
         // 신고 2차원배열 생성
-        String[][] rptArr2D = Arrays.stream(prtArrDst)
+        String[][] rptArr2D = Arrays.stream(rptArrDst)
                                 .map(item -> item.split(" "))
                                 .toArray(String[][]::new);
-        //[[muzi, frodo], [apeach, frodo], [frodo, neo], [muzi, neo], [apeach, muzi]]
         
         // 신고된 ID 추출
-        String[] rptArr = Arrays.stream(rptArr2D).map(item->item[1]).toArray(String[]::new);
+        String[] rptdArr = Arrays.stream(rptArr2D).map(item->item[1]).toArray(String[]::new);
         // list 변환
-        List<String> rptList = (List<String>) Arrays.asList(rptArr);
-        System.out.println("########### rptList \t" + rptList);
+        List<String> rptdList = (List<String>) Arrays.asList(rptdArr);
+        System.out.println("########### rptdList \t" + rptdList);
         
         // 신고된 ID 중복 제거
-        String[] rptArrDst = Arrays.stream(rptArr).distinct().toArray(String[]::new);
+        String[] rptdArrDst = Arrays.stream(rptdArr).distinct().toArray(String[]::new);
         // 신고된 ID, 신고 건수 2차원배열 생성
-        String[][] rptArrCnt2D = Arrays.stream(rptArrDst)
-                                        .map(item->new String[]{item, String.valueOf(Collections.frequency(rptList,item))} )
+        String[][] rptdArrCnt2D = Arrays.stream(rptdArrDst)
+                                        .map(item->new String[]{item, String.valueOf(Collections.frequency(rptdList,item))} )
                                         .toArray(String[][]::new);
-        System.out.println("########### rptArrCnt2D " + Arrays.deepToString(rptArrCnt2D));
+        System.out.println("########### rptdArrCnt2D " + Arrays.deepToString(rptdArrCnt2D));
         
         // 로직
         for(int i=0; i<id_list.length; i++) {
@@ -58,7 +61,7 @@ public class test2022 {
             for(int j=0;j<rptIdArr.length;j++) {
                 String strRptId = rptIdArr[j];
                 
-                String[] tmpArr = Arrays.stream(rptArrCnt2D).filter(f->f[0].equals(strRptId)).map(f->f[1]).toArray(String[]::new);
+                String[] tmpArr = Arrays.stream(rptdArrCnt2D).filter(f->f[0].equals(strRptId)).map(f->f[1]).toArray(String[]::new);
                 int rptIdCnt = Integer.valueOf(tmpArr[0]);
                 
                 // 정지 기준 충족할 경우 정지 카운트 증가
