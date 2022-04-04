@@ -1,6 +1,7 @@
 package com.test.kakao;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class test2022 {
 
@@ -32,14 +33,12 @@ public class test2022 {
                                 .map(item -> item.split(" "))
                                 .toArray(String[][]::new);
         
-        // 신고된 ID 추출
-        String[] rptdArr = Arrays.stream(rptArr2D).map(item->item[1]).toArray(String[]::new);
-        // list 변환
-        List<String> rptdList = (List<String>) Arrays.asList(rptdArr);
+        // 신고된 ID 추출 List
+        List<String> rptdList = Arrays.stream(rptArr2D).map(item->item[1]).collect(Collectors.toList());
         System.out.println("########### rptdList \t" + rptdList);
         
-        // 신고된 ID 중복 제거
-        String[] rptdArrDst = Arrays.stream(rptdArr).distinct().toArray(String[]::new);
+        // 신고된 ID 추출 및 중복 제거
+        String[] rptdArrDst = Arrays.stream(rptArr2D).map(item->item[1]).distinct().toArray(String[]::new);
         // 신고된 ID, 신고 건수 2차원배열 생성
         String[][] rptdArrCnt2D = Arrays.stream(rptdArrDst)
                                         .map(item->new String[]{item, String.valueOf(Collections.frequency(rptdList,item))} )
@@ -81,9 +80,10 @@ public class test2022 {
         return answer;
     }
     
+    
     /**
 	 * 신고결과 받기1_1
-	 * @Description : 신고결과 받기1_1
+	 * @Description : 신고결과 받기 정답 풀이 버전
 	 */
     public static int[] solution1_1() {
     	
@@ -146,6 +146,61 @@ public class test2022 {
         }
         // 신고 결과 int 배열 추출
         answer = Arrays.stream(answer2D).mapToInt(item->Integer.valueOf(item[1])).toArray();
+        
+
+        System.out.println("########### answer \t" + Arrays.toString(answer));
+        
+        
+        return answer;
+    }
+    
+    
+    /**
+	 * 신고결과 받기1_2
+	 * @Description : 신고결과 받기 다른 사람 풀이 버전 참고
+	 */
+    public static int[] solution1_2() {
+    	
+    	String[] id_list = {"muzi", "frodo", "apeach", "neo"};
+    	String[] report  = {"muzi frodo", "apeach frodo", "frodo neo", "muzi neo", "apeach muzi"};
+//    	String[] id_list = {"con", "ryan"};
+//    	String[] report  = {"ryan con", "ryan con", "ryan con", "ryan con"};
+    	
+    	int k = 2;
+    	
+    	int[] answer;
+
+        System.out.println("########### id_list \t" + Arrays.toString(id_list));
+        System.out.println("########### report \t" + Arrays.toString(report));
+
+        
+        // 신고 중복 제거
+        String[] rptArrDst = Arrays.stream(report).distinct().toArray(String[]::new);
+        
+        // 신고 2차원배열 생성
+        String[][] rptArr2D = Arrays.stream(rptArrDst)
+                                .map(item -> item.split(" "))
+                                .toArray(String[][]::new);
+        
+        // Map에 신고된 유저, 신고횟수 누적 업데이트 
+        HashMap<String, Integer> rptdCntMap = new HashMap<String, Integer>();
+        for(String[] strArr : rptArr2D) {
+            String strRtpd = strArr[1];
+            rptdCntMap.put(strRtpd, rptdCntMap.getOrDefault(strRtpd, 0) + 1);
+        }
+        
+        // 신고 결과 생성
+        answer = Arrays.stream(id_list)
+        				.map(item->{
+							// 해당 유저가 신고한 ID 필터링
+				            String[] rptIdArr = Arrays.stream(rptArr2D)
+				                                        .filter(x->x[0].equals(item))
+				                                        .map(x->x[1]).toArray(String[]::new);
+				            // 신고한 ID가 정지기준에 적합한 경우 카운트
+				            return Arrays.stream(rptIdArr)
+				            				.filter(z->rptdCntMap.getOrDefault(z, 0) >= k)
+				            				.count();
+						}).mapToInt(Long::intValue).toArray();
         
 
         System.out.println("########### answer \t" + Arrays.toString(answer));
