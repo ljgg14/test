@@ -318,7 +318,7 @@ public class test2022 {
 
 					                System.out.println("########### strCar \t" + strCar + "\t###########");
 					                
-					                // 해당 차량의 누적 주차시간(분) 계산
+					                //== 해당 차량의 누적 주차시간(분) 계산
 					                Arrays.stream(carArr2D)
 	                                        .filter(y->y[1].equals(strCar))
 	                                        .map(y->{
@@ -344,7 +344,7 @@ public class test2022 {
 	                                        }).toArray(String[]::new);
 					                System.out.println("########### timeMap  \t" + timeMap);
 					                
-					                // 추가시간
+					                //== 추가시간
 					                long addTm = 0;
 					                // OUT이 IN보다 작거나 없는 경우 IN ~ 23:59 까지 시간 추가
 					                try {
@@ -360,7 +360,8 @@ public class test2022 {
 					                    e.printStackTrace();
 					                }
 					                System.out.println("########### addTm \t" + addTm);
-					                
+
+                                    //== 누적주차시간 + 추가주차시간
 					                return Long.valueOf(timeMap.getOrDefault("ACC_TIME", "0")) + Math.abs(addTm);
 					
 					            }).mapToLong(Long::valueOf).toArray();
