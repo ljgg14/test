@@ -362,8 +362,10 @@ public class test2022 {
 					                System.out.println("########### addTm \t" + addTm);
 
                                     //== 누적주차시간 + 추가주차시간
-					                return Long.valueOf(timeMap.getOrDefault("ACC_TIME", "0")) + Math.abs(addTm);
-					
+					                long lngAccTm = Long.valueOf(timeMap.getOrDefault("ACC_TIME", "0")) + Math.abs(addTm);
+					                System.out.println("########### lngAccTm \t" + lngAccTm);
+
+					                return lngAccTm;
 					            }).mapToLong(Long::valueOf).toArray();
 		
 		// 차량별 청구 주차요금 int배열 설정
@@ -381,6 +383,70 @@ public class test2022 {
 		System.out.println("########### answer \t" + Arrays.toString(answer));
 		
 		return answer;
+    }
+    
+    
+    /**
+	 * 주차 요금 계산
+	 * @Description : 주차 요금 계산 다른사람풀이
+	 */
+    public static int[] solution3_1() {
+    	int[] answer = {};
+    	
+    	int[] fees = {180, 5000, 10, 600};
+    	String[] records = {"05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"};
+//    	int[] fees = {1, 461, 1, 10};
+//    	String[] records = {"00:00 1234 IN"};
+    	
+
+        // 자동차별 누적주차시간(분) Map (TreeMap은 Key값 기준 자동을 오름차순 정렬됨)
+        TreeMap<String, Integer> carTimeMap = new TreeMap<String, Integer>();
+        
+        // 자동차별 누적주차시간(분) Map 설정
+        for(String strHis : records) {
+            // 공백 기준으로 분리
+            String[] hisDtlArr = strHis.split(" ");
+            // 입차일 경우 시간(분)을 마이너스 처리
+            int intTime = "IN".equals(hisDtlArr[2]) ? -1 : 1;
+            intTime *= timeToInt(hisDtlArr[0]);
+            // Map에 누적주차시간(분) 갱신
+            carTimeMap.put(hisDtlArr[1], carTimeMap.getOrDefault(hisDtlArr[1], 0) + intTime );
+        }
+		System.out.println("########### carTimeMap \t" + carTimeMap);
+        
+        // 리턴 배열 초기화
+        int idx = 0;
+        answer = new int[carTimeMap.size()];
+        // 자동차별 주차요금 계산
+        for(int x : carTimeMap.values()) {
+            // 누적시간이 0 또는 음수일 경우 출차하지 않은 경우이므로 1,439분을 더한다
+            int intAccTime = x <= 0 ? x + 1439 : x; // 1,439분 (00:00~23:59)
+            // 기본시간 차감
+            intAccTime -= fees[0];
+
+            // 주차 요금 계산
+            int intCost = fees[1]; // 기본요금으로 초기화
+            // 기본시간을 초과한 경우
+            if(intAccTime > 0) {
+                // 기본요금 + [(누적시간-기본시간)/단위시간] * 단위요금
+                if(intAccTime%fees[2] == 0) {
+                    intCost += (intAccTime/fees[2]) * fees[3];
+                } else { // 단위시간으로 나누어 떨어지지 않으면 올림한다
+                    intCost += (intAccTime/fees[2] + 1) * fees[3];
+                }
+            }
+            answer[idx] = intCost;
+            idx++;
+        }
+		System.out.println("########### answer \t" + Arrays.toString(answer));
+		
+		return answer;
+    }
+
+    // 문자열 시간을 int 분으로 변환
+    public static int timeToInt(String strTime) {
+        String[] timeArr = strTime.split(":");
+        return (Integer.parseInt(timeArr[0]) * 60) + Integer.parseInt(timeArr[1]);
     }
     
 }
