@@ -20,6 +20,8 @@ public class testSort {
         int idxI, idxJ, idxK;
         int[] arrTmp, arrAnsOne;
         
+        
+        
         // For commands[i]
         for(int i=0; i<commands.length; i++) {
         	

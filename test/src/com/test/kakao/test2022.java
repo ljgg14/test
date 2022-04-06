@@ -2,6 +2,7 @@ package com.test.kakao;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.text.*;
 
 public class test2022 {
 
@@ -207,6 +208,178 @@ public class test2022 {
         
         
         return answer;
+    }
+    
+    
+    /**
+	 * k진수에서 소수 개수 구하기
+	 * @Description : k진수에서 소수 개수 구하기
+	 */
+    public static int solution2() {
+    	
+    	int n = 437674;
+    	int k = 3;
+//    	int n = 110011;
+//    	int k = 10;
+//    	int n = 999999;
+//    	int k = 3;
+    	
+    	int answer = 0;
+    	
+        System.out.println("########### n: " + String.valueOf(n));
+        System.out.println("########### k: " + String.valueOf(k));
+        System.out.println("########### 변환: " + Integer.toString(n, k));
+    	
+//    	// 10진법 -> k진법
+//        int intCur = n;
+//        StringBuilder sb = new StringBuilder();
+//        // 진법 변환할 숫자가 0보다 큰 경우 지속 진행
+//        while(intCur > 0) {
+//            // 만약 N으로 나누었는데 10보다 작다면 해당 숫자를 바로 append
+//            if(intCur % k < 10) {
+//                sb.append(intCur % k);
+//            // 만약 N이 10보다 큰 경우, N으로 나누었는데 10 이상이면 10진법이므로 10만큼 빼고 'A'를 더한다.
+//            } else {
+//                sb.append(String.valueOf(intCur % k - 10 + 'A'));
+//            }
+//            
+//            intCur /= k;
+//        }
+//        // 변환된 수
+//        String strCnv = sb.reverse().toString();
+        
+        // 10진법 -> k진법 변환을 함수로 심플하게
+        // 문제 조건에 맞는 소수를 분리하여 long배열 생성
+        long[] numArr = Arrays.stream(Integer.toString(n, k).split("0"))
+                                .filter(c->"".equals(c) == false)
+                                .mapToLong(Long::valueOf).toArray();
+        System.out.println("########### numArr \t" + Arrays.toString(numArr));
+        
+        // 소수 구하기 : 1을 제외하고 자기 자신으로 한 번만 나눠질때 소수
+        for(long num : numArr) {
+            // 0과 1은 소수가 아니다
+            if(num < 2) continue;
+            
+            // 제곱근 까지 약수가 없는 경우 소수
+            int cnt = 0;
+            for(long l=2; l<=Math.sqrt(num); l++) {
+                if(num % l == 0) {
+                    cnt ++;
+                    break;
+                }
+            }
+            // 제곱근 까지 약수가 없는 경우 소수
+            if(cnt==0) {
+            	answer++;
+                System.out.println("########### 소수: \t" + String.valueOf(num));
+            }
+        }
+
+        System.out.println("########### answer \t" + String.valueOf(answer));
+    	
+    	return answer;
+    }
+    
+    
+    /**
+	 * 주차 요금 계산
+	 * @Description : 주차 요금 계산
+	 */
+    public static int[] solution3() {
+    	
+    	int[] fees = {180, 5000, 10, 600};
+    	String[] records = {"05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"};
+//    	int[] fees = {1, 461, 1, 10};
+//    	String[] records = {"00:00 1234 IN"};
+    	
+    	
+    	int[] answer = {};
+    	
+        String[][] carArr2D = Arrays.stream(records)
+					                .map(r->r.split(" "))
+					                .toArray(String[][]::new);
+		// 차량번호 중복제거
+		String[] carArrDst = Arrays.stream(carArr2D)
+					                .map(r->r[1])
+					                .distinct().toArray(String[]::new);
+		// 오름차순 정렬
+		Arrays.sort(carArrDst);
+		
+		
+		// 중복 제거 차량 번호 기준으로 써치
+		long[] carTmArr = Arrays.stream(carArrDst)
+					            .map(x-> {
+					        		// 시간계산을 위한 날짜 포멧 yy/MM/dd HH:mm:ss
+					        		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+					                // 해당 차량번호
+					                String strCar = x;
+					                // 시간 계산을 위한 Map 생성
+					                HashMap<String, String> timeMap = new HashMap<String, String>();
+
+					                System.out.println("########### strCar \t" + strCar + "/t###########");
+					                
+					                // 해당 차량의 누적 주차시간(분) 계산
+					                Arrays.stream(carArr2D)
+	                                        .filter(y->y[1].equals(strCar))
+	                                        .map(y->{
+	                                            // 내역, 시각(시:분) Map에 입력
+	                                            timeMap.put(y[2], y[0]);
+
+	                                            // 내역이 OUT일 때 주차 시간 계산
+	                                            if("OUT".equals(y[2])) {
+	                                                try {
+	                                                    Date dtIn = format.parse(timeMap.get("IN"));
+	                                                    Date dtOut = format.parse(timeMap.get("OUT"));
+	                                                    // 분 차이
+	                                                    long diffMin = (dtOut.getTime() - dtIn.getTime()) / 60000;
+	                                                    // 누적 주차시간(분) 갱신
+	                                                    long lngAccTm = Long.valueOf(timeMap.getOrDefault("ACC_TIME", "0")) + Math.abs(diffMin);
+	                                                    // Map에 누적주차시간 갱신
+	                                                    timeMap.put("ACC_TIME", String.valueOf(lngAccTm));
+	                                                } catch (ParseException e) {
+	                                                    e.printStackTrace();
+	                                                }
+	                                            }
+	                                            return timeMap.getOrDefault("ACC_TIME", "0");
+	                                        }).toArray(String[]::new);
+					                System.out.println("########### timeMap  \t" + timeMap);
+					                
+					                // 추가시간
+					                long addTm = 0;
+					                // OUT이 IN보다 작거나 없는 경우 IN ~ 23:59 까지 시간 추가
+					                try {
+					                    Date dtIn = format.parse(timeMap.get("IN"));
+					                    Date dtOut = format.parse(timeMap.getOrDefault("OUT", "00:00"));
+					
+					                    // 입차시각이 출차시각보다 크거나 같을 경우 즉, 출차하지 않은 경우 23:59 까지 시간(분)을 추가 계산한다
+					                    if(dtIn.getTime() >= dtOut.getTime()) {
+					                        // 분 차이
+					                        addTm = (format.parse("23:59").getTime() - dtIn.getTime()) / 60000; // 1초 : 1000
+					                    }
+					                } catch (ParseException e) {
+					                    e.printStackTrace();
+					                }
+					                System.out.println("########### addTm \t" + addTm);
+					                
+					                return Long.valueOf(timeMap.getOrDefault("ACC_TIME", "0")) + Math.abs(addTm);
+					
+					            }).mapToLong(Long::valueOf).toArray();
+		
+		// 차량별 청구 주차요금 int배열 설정
+		answer = Arrays.stream(carTmArr)
+		    .map(x->{
+		        // 기본시간(분) 이하 일경우 기본요금만 받는다
+		        if(x<=fees[0]) {
+		            return fees[1];
+		        } else {
+		            // 주차요금 =  기본요금 + 올림[(누적주차시간-기본시간)/단위시간] * 단위요금
+		            return fees[1] + (int) Math.ceil(Float.valueOf(x - fees[0]) / fees[2]) * fees[3];
+		        }
+		    }).mapToInt(x->Long.valueOf(x).intValue()).toArray();
+		
+		System.out.println("########### answer \t" + Arrays.toString(answer));
+		
+		return answer;
     }
     
 }
