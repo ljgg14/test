@@ -316,7 +316,7 @@ public class test2022 {
 					                // 시간 계산을 위한 Map 생성
 					                HashMap<String, String> timeMap = new HashMap<String, String>();
 
-					                System.out.println("########### strCar \t" + strCar + "/t###########");
+					                System.out.println("########### strCar \t" + strCar + "\t###########");
 					                
 					                // 해당 차량의 누적 주차시간(분) 계산
 					                Arrays.stream(carArr2D)
