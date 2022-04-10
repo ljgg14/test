@@ -1,8 +1,14 @@
 package com.test.kakao;
 
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.text.*;
 
 public class test2022 {
 
@@ -448,5 +454,121 @@ public class test2022 {
         String[] timeArr = strTime.split(":");
         return (Integer.parseInt(timeArr[0]) * 60) + Integer.parseInt(timeArr[1]);
     }
+
+    
+    /**
+	 * 양궁대회
+	 * @Description : 양궁대회
+	 */
+    public static int[] solution4() {
+    	int[] answer = {};
+    	
+//    	int n = 5;
+//    	int[] info = {2,1,1,1,0,0,0,0,0,0,0}; // {0,2,2,0,1,0,0,0,0,0,0}
+//    	int n = 9;
+//    	int[] info = {0,0,1,2,0,1,1,1,1,1,1}; //  {1,1,2,0,1,2,2,0,0,0,0}
+//    	int n = 1;
+//    	int[] info = {1,0,0,0,0,0,0,0,0,0,0}; // {-1}
+    	int n = 10;
+    	int[] info = {0,0,0,0,0,0,0,0,3,4,3}; // {1,1,1,1,1,1,1,1,0,0,2}
+
+		System.out.println("\t########### info \t" + Arrays.toString(info));
+
+		
+    	int[] liTmpArr = new int[info.length]; // 임시 케이스 배열
+    	int r = n; // 할당치 n에서 남은 갯수(초기값은 n)
+    	HashMap<String, Object> answerMap = new HashMap<String, Object>();
+    	
+		// 조합 구하기 (재귀를 이용해 구현)
+		combinationViaRecursion(info, liTmpArr, 0, r, n, answerMap);
+
+		// 결과 int배열 설정
+		if(answerMap.get("ANSWER") == null) {
+			answer = new int[]{-1};
+		} else {
+			answer = Arrays.stream(String.valueOf(answerMap.get("ANSWER")).split(",")).mapToInt(Integer::valueOf).toArray();
+		}
+		
+    	System.out.println("\t########### answer \t" + Arrays.toString(answer));
+		
+    	return answer;
+    }
+
+
+    /**
+	 * 재귀식을 사용한 조합 함수
+	 * @Description : 재귀식을 사용한 조합 함수
+	 * @param - int[] info: 어피치가 맞춘 내역
+	 *        - int[] liTmpArr : 케이스 배열 
+	 *        - int depth : 탐색 깊이 인덱스
+	 *        - int r : 남은 화살 갯수
+	 *        - int n : 총 화살 갯수
+	 */
+	static void combinationViaRecursion(int[] info, int[] liTmpArr, int depth, int r, int n, HashMap<String, Object> map) {
+		
+		// 화살을 다 쏘거나 depth가 끝까지 가면 해당 케이스를 검증한다
+		if(r == 0 || depth == info.length) {
+            int intApScore = 0; // 어피치 점수
+            int intLiScore = 0; // 라이언 점수
+            int intScoreGap = (int) map.getOrDefault("SCORE_GAP", 0);
+            int[] rtnArr = Arrays.copyOf(liTmpArr, liTmpArr.length);
+            
+            // 화살이 남았다면 0점에 남은 화살을 모두 쏜다
+            if(r > 0) rtnArr[10] = rtnArr[10] + r;
+            
+            // 점수 계산
+            for(int k=0; k<info.length; k++) {
+                // 라이언 화살 갯수가 클 경우만 라이언에게 점수 배정
+                if(rtnArr[k] > info[k]) {
+                    if(rtnArr[k] > 0) intLiScore += 10 - k;
+                } else {
+                	if(info[k] > 0) intApScore += 10 - k;
+                }
+            }
+            
+            //== 점수차 계산 및 결과 갱신
+            int tmpGap = intLiScore - intApScore;
+            // 라이언이 이전 점수차 이상으로 우승할 경우 answer 갱신
+            if(tmpGap > 0 && tmpGap >= intScoreGap) {
+            	
+            	// 결과 내역을 물자열 모양으로 변환
+            	String strAnswer = String.join(",", Arrays.stream(rtnArr).mapToObj(String::valueOf).toArray(String[]::new)); 
+            	//0,0,0,0,0,0,0,0,0,0,0
+            	String preRev = new StringBuilder(String.valueOf(map.getOrDefault("ANSWER", ""))).reverse().toString();
+            	String tmpRev = new StringBuilder(strAnswer).reverse().toString();
+            	
+            	if(tmpRev.compareTo(preRev) > 0) {
+                    // 결과 갱신
+                    map.put("SCORE_GAP", tmpGap); // 라이언 우승 점수차
+                    map.put("ANSWER", strAnswer); // 라이언 우승 케이스 배열(문자열 포맷)
+            	}
+            	
+                System.out.println("\t########### rtnArr \t" + Arrays.toString(rtnArr) + " - WIN!! depth:[" + (depth-1) + "], r:[" + r + "] \t" + intApScore + ", " + intLiScore + "(" + tmpGap + ")");
+            }
+            
+			return;
+		}
+		
+
+		/** Case[TRUE] - 화살 발사 (어피치보다 많이 쏠 수 있을 경우) **/ 
+        int intShtCnt = 0;
+        int intApCnt = info[depth]; // 어피치가 쏜 화살갯수
+        // 어피치가 맞춘 화살갯수 +1 이 라이언의 남은 화살갯수 이하일 때 발사!
+        if((intApCnt + 1) <= r) {
+        	intShtCnt = intApCnt + 1; // 발사 갯수 설정
+        	liTmpArr[depth] = intShtCnt; // 배열에 발사 갯수 갱신
+        }
+		//= 재귀 호출 (발사한 만큼 화살갯수 차감)
+		combinationViaRecursion(info, liTmpArr, depth + 1, r - intShtCnt, n, map);
+
+		
+		/** Case[FALSE] - 화살 무조건 안쏠 경우 **/
+		liTmpArr[depth] = 0; // 배열에 발사 갯수 갱신
+		//= 재귀 호출 (차감 안함)
+		combinationViaRecursion(info, liTmpArr, depth + 1, r, n, map);
+	}
     
 }
+
+
+
