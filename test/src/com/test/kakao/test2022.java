@@ -465,12 +465,12 @@ public class test2022 {
     	
 //    	int n = 5;
 //    	int[] info = {2,1,1,1,0,0,0,0,0,0,0}; // {0,2,2,0,1,0,0,0,0,0,0}
-//    	int n = 9;
-//    	int[] info = {0,0,1,2,0,1,1,1,1,1,1}; //  {1,1,2,0,1,2,2,0,0,0,0}
+    	int n = 9;
+    	int[] info = {0,0,1,2,0,1,1,1,1,1,1}; //  {1,1,2,0,1,2,2,0,0,0,0}
 //    	int n = 1;
 //    	int[] info = {1,0,0,0,0,0,0,0,0,0,0}; // {-1}
-    	int n = 10;
-    	int[] info = {0,0,0,0,0,0,0,0,3,4,3}; // {1,1,1,1,1,1,1,1,0,0,2}
+//    	int n = 10;
+//    	int[] info = {0,0,0,0,0,0,0,0,3,4,3}; // {1,1,1,1,1,1,1,1,0,0,2}
 
 		System.out.println("\t########### info \t" + Arrays.toString(info));
 
@@ -531,19 +531,26 @@ public class test2022 {
             // 라이언이 이전 점수차 이상으로 우승할 경우 answer 갱신
             if(tmpGap > 0 && tmpGap >= intScoreGap) {
             	
-            	// 결과 내역을 물자열 모양으로 변환
-            	String strAnswer = String.join(",", Arrays.stream(rtnArr).mapToObj(String::valueOf).toArray(String[]::new)); 
-            	//0,0,0,0,0,0,0,0,0,0,0
-            	String preRev = new StringBuilder(String.valueOf(map.getOrDefault("ANSWER", ""))).reverse().toString();
+                // 결과 내역을 문자열 모양으로 변환하여 가장 낮은 점수를 맞힌 경우 비교
+            	String strAnswer = String.join(",", Arrays.stream(rtnArr).mapToObj(String::valueOf).toArray(String[]::new));
+                // 문자열을 역순으로 변환
+            	String preRev = new StringBuilder(String.valueOf(map.getOrDefault("ANSWER", "0,0,0,0,0,0,0,0,0,0,0"))).reverse().toString();
             	String tmpRev = new StringBuilder(strAnswer).reverse().toString();
             	
-            	if(tmpRev.compareTo(preRev) > 0) {
+            	// 점수차가 이전 점수차 보다 크면 무조건 갱신
+            	if(tmpGap > intScoreGap) {
+                    // 결과 갱신
+                    map.put("SCORE_GAP", tmpGap); // 라이언 우승 점수차
+                    map.put("ANSWER", strAnswer); // 라이언 우승 케이스 배열(문자열 포맷)
+            	}
+            	// 점수차가 같으면 낮은 점수를 맞힌 개수가 더 많을 때만 갱신 
+            	else if(tmpGap == intScoreGap && tmpRev.compareTo(preRev) > 0) {
                     // 결과 갱신
                     map.put("SCORE_GAP", tmpGap); // 라이언 우승 점수차
                     map.put("ANSWER", strAnswer); // 라이언 우승 케이스 배열(문자열 포맷)
             	}
             	
-                System.out.println("\t########### rtnArr \t" + Arrays.toString(rtnArr) + " - WIN!! depth:[" + (depth-1) + "], r:[" + r + "] \t" + intApScore + ", " + intLiScore + "(" + tmpGap + ")");
+                System.out.println("\t########### rtnArr \t" + Arrays.toString(rtnArr) + " - WIN!! depth:[" + (depth-1) + "], r:[" + r + "] \t" + intApScore + ", " + intLiScore + "(" + tmpGap + "), OldGap(" + intScoreGap + ")");
             }
             
 			return;
