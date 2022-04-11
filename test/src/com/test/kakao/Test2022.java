@@ -484,10 +484,9 @@ public class Test2022 {
 		
     	int[] liTmpArr = new int[info.length]; // 임시 케이스 배열
     	int r = n; // 할당치 n에서 남은 갯수(초기값은 n)
-    	HashMap<String, Object> answerMap = new HashMap<String, Object>();
     	
 		// 조합 구하기 (재귀를 이용해 구현)
-		combinationViaRecursion(info, liTmpArr, 0, r, n, answerMap);
+		combinationViaRecursion(info, liTmpArr, 0, r, n);
 
 		// 결과 int배열 설정
 		if(stScoreGap == 0) {
@@ -511,7 +510,7 @@ public class Test2022 {
 	 *        - int r : 남은 화살 갯수
 	 *        - int n : 총 화살 갯수
 	 */
-    public void combinationViaRecursion(int[] info, int[] liTmpArr, int depth, int r, int n, HashMap<String, Object> map) {
+    public void combinationViaRecursion(int[] info, int[] liTmpArr, int depth, int r, int n) {
 		
 		// 화살을 다 쏘거나 depth가 끝까지 가면 해당 케이스를 검증한다
 		if(r == 0 || depth == info.length) {
@@ -569,13 +568,13 @@ public class Test2022 {
         	liTmpArr[depth] = intShtCnt; // 배열에 발사 갯수 갱신
         }
 		//= 재귀 호출 (발사한 만큼 화살갯수 차감)
-		combinationViaRecursion(info, liTmpArr, depth + 1, r - intShtCnt, n, map);
+		combinationViaRecursion(info, liTmpArr, depth + 1, r - intShtCnt, n);
 
 		
 		/** Case[FALSE] - 화살 무조건 안쏠 경우 **/
 		liTmpArr[depth] = 0; // 배열에 발사 갯수 갱신
 		//= 재귀 호출 (차감 안함)
-		combinationViaRecursion(info, liTmpArr, depth + 1, r, n, map);
+		combinationViaRecursion(info, liTmpArr, depth + 1, r, n);
 	}
     
 }
