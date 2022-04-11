@@ -1,13 +1,15 @@
 package com.test.main;
 
-import com.test.kakao.test2022;
+import com.test.kakao.Test2022;
 
 public class main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		test2022.solution4();
+//		Test2022.solution4();
+		
+		Test2022.getInstace().solution4();
 	}
 	
 }

@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class test2022 {
+public class Test2022 {
+	
+	public static Test2022 getInstace() {
+		
+		return new Test2022();
+	}
 
 
 	/**
@@ -456,11 +461,13 @@ public class test2022 {
     }
 
     
+    int stScoreGap = 0;
+    int[] stAnswer = {};
     /**
 	 * 양궁대회
 	 * @Description : 양궁대회
 	 */
-    public static int[] solution4() {
+    public int[] solution4() {
     	int[] answer = {};
     	
 //    	int n = 5;
@@ -483,10 +490,10 @@ public class test2022 {
 		combinationViaRecursion(info, liTmpArr, 0, r, n, answerMap);
 
 		// 결과 int배열 설정
-		if(answerMap.get("ANSWER") == null) {
+		if(stScoreGap == 0) {
 			answer = new int[]{-1};
 		} else {
-			answer = Arrays.stream(String.valueOf(answerMap.get("ANSWER")).split(",")).mapToInt(Integer::valueOf).toArray();
+			answer = stAnswer;
 		}
 		
     	System.out.println("\t########### answer \t" + Arrays.toString(answer));
@@ -504,13 +511,12 @@ public class test2022 {
 	 *        - int r : 남은 화살 갯수
 	 *        - int n : 총 화살 갯수
 	 */
-	static void combinationViaRecursion(int[] info, int[] liTmpArr, int depth, int r, int n, HashMap<String, Object> map) {
+    public void combinationViaRecursion(int[] info, int[] liTmpArr, int depth, int r, int n, HashMap<String, Object> map) {
 		
 		// 화살을 다 쏘거나 depth가 끝까지 가면 해당 케이스를 검증한다
 		if(r == 0 || depth == info.length) {
             int intApScore = 0; // 어피치 점수
             int intLiScore = 0; // 라이언 점수
-            int intScoreGap = (int) map.getOrDefault("SCORE_GAP", 0);
             int[] rtnArr = Arrays.copyOf(liTmpArr, liTmpArr.length);
             
             // 화살이 남았다면 0점에 남은 화살을 모두 쏜다
@@ -529,28 +535,25 @@ public class test2022 {
             //== 점수차 계산 및 결과 갱신
             int tmpGap = intLiScore - intApScore;
             // 라이언이 이전 점수차 이상으로 우승할 경우 answer 갱신
-            if(tmpGap > 0 && tmpGap >= intScoreGap) {
-            	
-                // 결과 내역을 문자열 모양으로 변환하여 가장 낮은 점수를 맞힌 경우 비교
-            	String strAnswer = String.join(",", Arrays.stream(rtnArr).mapToObj(String::valueOf).toArray(String[]::new));
+            if(tmpGap > 0 && tmpGap >= stScoreGap) {
                 // 문자열을 역순으로 변환
-            	String preRev = new StringBuilder(String.valueOf(map.getOrDefault("ANSWER", "0,0,0,0,0,0,0,0,0,0,0"))).reverse().toString();
-            	String tmpRev = new StringBuilder(strAnswer).reverse().toString();
+            	String preRev = new StringBuilder(Arrays.toString(stAnswer).replaceAll("[^0-9]","")).reverse().toString();
+            	String tmpRev = new StringBuilder(Arrays.toString(rtnArr).replaceAll("[^0-9]","")).reverse().toString();
             	
             	// 점수차가 이전 점수차 보다 크면 무조건 갱신
-            	if(tmpGap > intScoreGap) {
+            	if(tmpGap > stScoreGap) {
                     // 결과 갱신
-                    map.put("SCORE_GAP", tmpGap); // 라이언 우승 점수차
-                    map.put("ANSWER", strAnswer); // 라이언 우승 케이스 배열(문자열 포맷)
+                    stScoreGap = tmpGap; // 라이언 우승 점수차
+                    stAnswer = Arrays.copyOf(rtnArr, rtnArr.length); // 라이언 우승 케이스 배열
             	}
             	// 점수차가 같으면 낮은 점수를 맞힌 개수가 더 많을 때만 갱신 
-            	else if(tmpGap == intScoreGap && tmpRev.compareTo(preRev) > 0) {
+            	else if(tmpGap == stScoreGap && tmpRev.compareTo(preRev) > 0) {
                     // 결과 갱신
-                    map.put("SCORE_GAP", tmpGap); // 라이언 우승 점수차
-                    map.put("ANSWER", strAnswer); // 라이언 우승 케이스 배열(문자열 포맷)
+                    stScoreGap = tmpGap; // 라이언 우승 점수차
+                    stAnswer = Arrays.copyOf(rtnArr, rtnArr.length); // 라이언 우승 케이스 배열
             	}
             	
-                System.out.println("\t########### rtnArr \t" + Arrays.toString(rtnArr) + " - WIN!! depth:[" + (depth-1) + "], r:[" + r + "] \t" + intApScore + ", " + intLiScore + "(" + tmpGap + "), OldGap(" + intScoreGap + ")");
+                System.out.println("\t########### rtnArr \t" + Arrays.toString(rtnArr) + " - WIN!! depth:[" + (depth-1) + "], r:[" + r + "] \t" + intApScore + ", " + intLiScore + "(" + tmpGap + "), OldGap(" + stScoreGap + ")");
             }
             
 			return;
